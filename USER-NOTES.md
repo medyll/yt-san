@@ -28,9 +28,46 @@ YouTube (pas de genre/sous-titre affiché) — donc penser à relancer ce proces
 "<videoId>": {
   "genre": "2-4 mots, style musical précis (pas générique)",
   "seoSubtitle": "accroche courte, < 70 caractères, pas clickbait",
-  "cleanDescription": "description nettoyée, contenu réel gardé"
+  "cleanDescription": "description nettoyée, contenu réel gardé",
+  "category": "une des 6 catégories ci-dessous",
+  "featured": true|false
 }
 ```
+
+### Catégories (`category`)
+
+Liste fermée, définie dans `CATEGORY_ORDER` (`src/lib/server/youtube.ts`) —
+l'ordre de cette liste est aussi l'ordre d'affichage des sections sur
+`/videos`. Ajouter une nouvelle catégorie seulement si aucune des 6
+existantes ne convient vraiment, et mettre à jour `CATEGORY_ORDER` +
+`VideoCategory` en même temps que le JSON :
+
+1. **Musique de jeu vidéo** — OST/thème composé pour un jeu ou mod.
+2. **Rescores & ciné** — rescore de trailer/doc/court-métrage existant,
+   concours de scoring (ScoreRelief...).
+3. **Collaborations** — coécrit avec un autre artiste crédité.
+4. **Compositions originales** — pièce solo, pas de contrainte de concours/
+   défi, pas un rescore.
+5. **Défis créatifs** — défi lancé par un tiers avec contraintes explicites
+   (thème imposé, instrument imposé, tempo...).
+6. **Improvisations** — improvisation courte, pas de production soignée.
+
+### Critère `featured` (grande vignette 2x2 vs standard)
+
+`featured: true` = pièce "portfolio", qui démontre un niveau ou une
+diversification professionnelle intéressante pour Léo Lebrun compositeur :
+OST officielle d'un jeu/mod, rescore d'une IP connue ou d'un concours avec
+partenaire notable (orchestre, fondation), collaboration créditée avec un
+autre artiste, composition originale aboutie qui montre une palette
+différente (ex: romantique vs épique habituel).
+
+`featured: false` = contenu plus mineur ou répétitif : improvisations,
+défis créatifs courts, extraits/teasers d'une pièce déjà postée en entier,
+rescores solo sans partenariat notable.
+
+C'est un jugement qualitatif, pas une formule — si le catalogue grossit et
+que la moitié des vidéos finit `featured: true`, resserrer le critère (le
+but est un effet de hiérarchie visuelle, pas un simple bonus systématique).
 
 ## Junk identifié dans les descriptions YouTube brutes (à filtrer)
 
