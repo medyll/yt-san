@@ -111,9 +111,17 @@ export async function getVideoBySlug(slug: string): Promise<Video | undefined> {
 	return videos.find((v) => v.slug === slug);
 }
 
+export function splitFeatured(videos: Video[]): { featured: Video[]; standard: Video[] } {
+	return {
+		featured: videos.filter((v) => v.featured),
+		standard: videos.filter((v) => !v.featured)
+	};
+}
+
 export interface VideoGroup {
 	category: VideoCategory | 'Autres';
-	videos: Video[];
+	featured: Video[];
+	standard: Video[];
 }
 
 export function groupByCategory(videos: Video[]): VideoGroup[] {
@@ -128,5 +136,12 @@ export function groupByCategory(videos: Video[]): VideoGroup[] {
 	const order = [...CATEGORY_ORDER, 'Autres' as const];
 	return order
 		.filter((category) => groups.has(category))
-		.map((category) => ({ category, videos: groups.get(category)! }));
+		.map((category) => {
+			const categoryVideos = groups.get(category)!;
+			return {
+				category,
+				featured: categoryVideos.filter((v) => v.featured),
+				standard: categoryVideos.filter((v) => !v.featured)
+			};
+		});
 }

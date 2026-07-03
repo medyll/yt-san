@@ -16,12 +16,12 @@
 {#if size === 'large'}
 	<a
 		href="{base}/videos/{video.slug}"
-		class="group block overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900 transition hover:border-red-500 sm:col-span-2 sm:row-span-2"
+		class="group flex h-full flex-col overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900 transition hover:border-red-500"
 	>
 		<div
 			role="img"
 			aria-label={video.title}
-			class="aspect-video w-full bg-neutral-800 bg-cover bg-center"
+			class="aspect-video min-h-48 flex-1 bg-neutral-800 bg-cover bg-center"
 			style:background-image="url('{video.thumbnail}')"
 		></div>
 		<div class="p-4">
@@ -39,10 +39,12 @@
 	</a>
 {:else}
 	<!--
-		Rows subgrid onto the shared category grid: every "small" card in the
-		same visual row adopts the tallest sibling's height per row (image,
-		genre, title, subtitle, date), so mismatched text lengths/line-wraps
-		no longer stagger the cards vertically.
+		Rows subgrid onto the shared standard-cards grid: every card in the same
+		visual row adopts the tallest sibling's height per row (image, genre,
+		title, subtitle, date), so mismatched text lengths/line-wraps no longer
+		stagger the cards vertically. Must only share a grid with other
+		row-span-5 cards — mixing with the "large" featured layout breaks the
+		row-track math, so featured videos render in their own separate grid.
 	-->
 	<a
 		href="{base}/videos/{video.slug}"
