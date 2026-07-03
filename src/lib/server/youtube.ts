@@ -1,17 +1,29 @@
 import { XMLParser } from 'fast-xml-parser';
 import { channel } from '$lib/config';
+import enrichment from '$lib/data/enrichment.json';
+
+export interface VideoEnrichment {
+	genre: string;
+	seoSubtitle: string;
+	cleanDescription: string;
+}
 
 export interface Video {
 	id: string;
 	slug: string;
 	title: string;
 	description: string;
+	rawDescription: string;
+	genre?: string;
+	seoSubtitle?: string;
 	published: string;
 	updated: string;
 	thumbnail: string;
 	url: string;
 	author: string;
 }
+
+const enrichmentData = enrichment as Record<string, VideoEnrichment>;
 
 const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`;
 
@@ -48,14 +60,18 @@ export async function getVideos(): Promise<Video[]> {
 		const videoId = String(entry['yt:videoId']);
 		const mediaGroup = entry['media:group'] as Record<string, unknown>;
 		const thumbnail = (mediaGroup['media:thumbnail'] as Record<string, string>)['@_url'];
-		const description = String(mediaGroup['media:description'] ?? '');
+		const rawDescription = String(mediaGroup['media:description'] ?? '');
 		const title = String(entry.title);
+		const enriched = enrichmentData[videoId];
 
 		return {
 			id: videoId,
 			slug: slugify(title, videoId),
 			title,
-			description,
+			description: enriched?.cleanDescription ?? rawDescription,
+			rawDescription,
+			genre: enriched?.genre,
+			seoSubtitle: enriched?.seoSubtitle,
 			published: String(entry.published),
 			updated: String(entry.updated),
 			thumbnail,

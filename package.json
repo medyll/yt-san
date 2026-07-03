@@ -11,7 +11,9 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"enrich": "node scripts/enrich-videos.mjs",
+		"enrich:force": "node scripts/enrich-videos.mjs --force"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",

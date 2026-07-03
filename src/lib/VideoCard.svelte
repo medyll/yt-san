@@ -16,7 +16,15 @@
 		class="aspect-video w-full object-cover"
 	/>
 	<div class="p-4">
+		{#if video.genre}
+			<span class="mb-1 inline-block text-xs font-medium tracking-wide text-red-500 uppercase">
+				{video.genre}
+			</span>
+		{/if}
 		<h3 class="line-clamp-2 font-semibold group-hover:text-red-500">{video.title}</h3>
+		{#if video.seoSubtitle}
+			<p class="mt-1 line-clamp-2 text-sm text-neutral-400">{video.seoSubtitle}</p>
+		{/if}
 		<p class="mt-1 text-xs text-neutral-500">
 			{new Date(video.published).toLocaleDateString('fr-FR', {
 				day: 'numeric',
