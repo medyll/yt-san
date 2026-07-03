@@ -2,10 +2,29 @@ import { XMLParser } from 'fast-xml-parser';
 import { channel } from '$lib/config';
 import enrichment from '$lib/data/enrichment.json';
 
+export type VideoCategory =
+	| 'Musique de jeu vidéo'
+	| 'Rescores & ciné'
+	| 'Collaborations'
+	| 'Compositions originales'
+	| 'Défis créatifs'
+	| 'Improvisations';
+
+export const CATEGORY_ORDER: VideoCategory[] = [
+	'Musique de jeu vidéo',
+	'Rescores & ciné',
+	'Collaborations',
+	'Compositions originales',
+	'Défis créatifs',
+	'Improvisations'
+];
+
 export interface VideoEnrichment {
 	genre: string;
 	seoSubtitle: string;
 	cleanDescription: string;
+	category: VideoCategory;
+	featured: boolean;
 }
 
 export interface Video {
@@ -16,6 +35,8 @@ export interface Video {
 	rawDescription: string;
 	genre?: string;
 	seoSubtitle?: string;
+	category?: VideoCategory;
+	featured: boolean;
 	published: string;
 	updated: string;
 	thumbnail: string;
@@ -72,6 +93,8 @@ export async function getVideos(): Promise<Video[]> {
 			rawDescription,
 			genre: enriched?.genre,
 			seoSubtitle: enriched?.seoSubtitle,
+			category: enriched?.category,
+			featured: enriched?.featured ?? false,
 			published: String(entry.published),
 			updated: String(entry.updated),
 			thumbnail,
@@ -86,4 +109,24 @@ export async function getVideos(): Promise<Video[]> {
 export async function getVideoBySlug(slug: string): Promise<Video | undefined> {
 	const videos = await getVideos();
 	return videos.find((v) => v.slug === slug);
+}
+
+export interface VideoGroup {
+	category: VideoCategory | 'Autres';
+	videos: Video[];
+}
+
+export function groupByCategory(videos: Video[]): VideoGroup[] {
+	const groups = new Map<VideoCategory | 'Autres', Video[]>();
+
+	for (const video of videos) {
+		const key = video.category ?? 'Autres';
+		if (!groups.has(key)) groups.set(key, []);
+		groups.get(key)!.push(video);
+	}
+
+	const order = [...CATEGORY_ORDER, 'Autres' as const];
+	return order
+		.filter((category) => groups.has(category))
+		.map((category) => ({ category, videos: groups.get(category)! }));
 }

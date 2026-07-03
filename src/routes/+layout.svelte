@@ -20,7 +20,7 @@
 
 <div class="flex min-h-screen flex-col bg-neutral-950 text-neutral-100">
 	<header class="border-b border-neutral-800">
-		<nav class="mx-auto flex max-w-4xl items-center justify-between px-4 py-4">
+		<nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
 			<a href="{base}/" class="text-lg font-bold tracking-tight">{site.title}</a>
 			<ul class="flex gap-6 text-sm">
 				{#each navLinks as link (link.href)}
@@ -39,7 +39,7 @@
 		</nav>
 	</header>
 
-	<main class="mx-auto w-full max-w-4xl flex-1 px-4 py-8">
+	<main class="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
 		{@render children()}
 	</main>
 

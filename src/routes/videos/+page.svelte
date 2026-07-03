@@ -9,9 +9,15 @@
 
 <Seo title="Vidéos" description={`Toutes les vidéos de la chaîne ${channel.name}.`} />
 
-<h1 class="mb-6 text-3xl font-bold">Vidéos</h1>
-<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
-	{#each data.videos as video (video.id)}
-		<VideoCard {video} />
-	{/each}
-</div>
+<h1 class="mb-8 text-3xl font-bold">Vidéos</h1>
+
+{#each data.groups as group (group.category)}
+	<section class="mb-12">
+		<h2 class="mb-4 text-xl font-bold text-neutral-200">{group.category}</h2>
+		<div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+			{#each group.videos as video (video.id)}
+				<VideoCard {video} size={video.featured ? 'large' : 'small'} />
+			{/each}
+		</div>
+	</section>
+{/each}
