@@ -28,7 +28,7 @@
 		<h2 class="text-xl font-bold">Dernières vidéos</h2>
 		<a href="{base}/videos" class="text-sm text-red-500 hover:underline">Voir tout</a>
 	</div>
-	<div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+	<div class="grid grid-flow-row-dense grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
 		{#each data.videos as video (video.id)}
 			<VideoCard {video} size={video.featured ? 'large' : 'small'} />
 		{/each}

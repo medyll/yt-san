@@ -14,7 +14,7 @@
 {#each data.groups as group (group.category)}
 	<section class="mb-12">
 		<h2 class="mb-4 text-xl font-bold text-neutral-200">{group.category}</h2>
-		<div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
+		<div class="grid grid-flow-row-dense grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
 			{#each group.videos as video (video.id)}
 				<VideoCard {video} size={video.featured ? 'large' : 'small'} />
 			{/each}
