@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import Seo from '$lib/Seo.svelte';
 	import VideoCard from '$lib/VideoCard.svelte';
-	import { channel } from '$lib/config';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 	const video = $derived(data.video);
+	const siteConfig = $derived(page.data.siteConfig);
 
 	const jsonLd = $derived({
 		'@context': 'https://schema.org',
@@ -19,7 +20,7 @@
 		keywords: video.tags.join(', '),
 		author: {
 			'@type': 'Person',
-			name: channel.name
+			name: siteConfig.channel.name
 		}
 	});
 </script>
@@ -77,7 +78,7 @@
 		<h2>Autres vidéos — {video.category}</h2>
 		<div class="video-grid">
 			{#each data.relatedByCategory as related (related.id)}
-				<VideoCard video={related} />
+				<VideoCard video={related} siteId={siteConfig.id} />
 			{/each}
 		</div>
 	</section>
@@ -88,7 +89,7 @@
 		<h2>Même type de composition — {video.type}</h2>
 		<div class="video-grid">
 			{#each data.relatedByType as related (related.id)}
-				<VideoCard video={related} />
+				<VideoCard video={related} siteId={siteConfig.id} />
 			{/each}
 		</div>
 	</section>

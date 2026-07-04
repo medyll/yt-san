@@ -1,7 +1,6 @@
-import { getVideos } from '$lib/server/youtube';
+import { getAllSites } from '$lib/server/sites';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
-	const videos = await getVideos();
-	return { videos: videos.slice(0, 8) };
+export const load: PageServerLoad = () => {
+	return { sites: getAllSites().map(({ id, channel, site }) => ({ id, channel, site })) };
 };

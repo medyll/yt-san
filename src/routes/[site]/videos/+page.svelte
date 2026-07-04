@@ -1,13 +1,14 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import Seo from '$lib/Seo.svelte';
 	import VideoCard from '$lib/VideoCard.svelte';
-	import { channel } from '$lib/config';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+	const siteConfig = $derived(page.data.siteConfig);
 </script>
 
-<Seo title="Vidéos" description={`Toutes les vidéos de la chaîne ${channel.name}.`} />
+<Seo title="Vidéos" description={`Toutes les vidéos de la chaîne ${siteConfig.channel.name}.`} />
 
 <h1 class="page-title">Vidéos</h1>
 
@@ -16,7 +17,7 @@
 		<h2>{group.category}</h2>
 		<div class="video-grid">
 			{#each group.videos as video (video.id)}
-				<VideoCard {video} large={video.featured} />
+				<VideoCard {video} siteId={siteConfig.id} large={video.featured} />
 			{/each}
 		</div>
 	</section>

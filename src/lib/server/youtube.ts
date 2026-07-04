@@ -1,41 +1,5 @@
 import { XMLParser } from 'fast-xml-parser';
-import { channel } from '$lib/config';
-import enrichment from '$lib/data/enrichment.json';
-
-export type VideoCategory =
-	| 'Musique de jeu vidéo'
-	| 'Concours de scoring caritatifs'
-	| 'Rescores & ciné'
-	| 'Collaborations'
-	| 'Compositions originales'
-	| 'Défis créatifs'
-	| 'Improvisations';
-
-export const CATEGORY_ORDER: VideoCategory[] = [
-	'Musique de jeu vidéo',
-	'Concours de scoring caritatifs',
-	'Rescores & ciné',
-	'Collaborations',
-	'Compositions originales',
-	'Défis créatifs',
-	'Improvisations'
-];
-
-// Second, orthogonal classification axis: sound format/instrumentation,
-// independent of the project context captured by `category`.
-export type VideoType = 'Orchestral' | 'Piano solo' | 'Expérimental';
-
-export const TYPE_ORDER: VideoType[] = ['Orchestral', 'Piano solo', 'Expérimental'];
-
-export interface VideoEnrichment {
-	genre: string;
-	seoSubtitle: string;
-	cleanDescription: string;
-	category: VideoCategory;
-	type: VideoType;
-	featured: boolean;
-	tags: string[];
-}
+import { getSite, type VideoEnrichment } from './sites';
 
 export interface Video {
 	id: string;
@@ -45,8 +9,8 @@ export interface Video {
 	rawDescription: string;
 	genre?: string;
 	seoSubtitle?: string;
-	category?: VideoCategory;
-	type?: VideoType;
+	category?: string;
+	type?: string;
 	featured: boolean;
 	tags: string[];
 	published: string;
@@ -55,10 +19,6 @@ export interface Video {
 	url: string;
 	author: string;
 }
-
-const enrichmentData = enrichment as Record<string, VideoEnrichment>;
-
-const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${channel.id}`;
 
 function slugify(title: string, id: string): string {
 	const base = title
@@ -70,10 +30,13 @@ function slugify(title: string, id: string): string {
 	return `${base}-${id}`;
 }
 
-let cache: Video[] | null = null;
+const cache = new Map<string, Video[]>();
 
-export async function getVideos(): Promise<Video[]> {
-	if (cache) return cache;
+async function fetchViaRss(
+	site: NonNullable<ReturnType<typeof getSite>>,
+	enrichmentData: Record<string, VideoEnrichment>
+): Promise<Video[]> {
+	const RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${site.channel.id}`;
 
 	const res = await fetch(RSS_URL);
 	if (!res.ok) {
@@ -89,7 +52,7 @@ export async function getVideos(): Promise<Video[]> {
 
 	const entries = feed.feed.entry ? [].concat(feed.feed.entry) : [];
 
-	cache = entries.map((entry: Record<string, unknown>) => {
+	return entries.map((entry: Record<string, unknown>) => {
 		const videoId = String(entry['yt:videoId']);
 		const mediaGroup = entry['media:group'] as Record<string, unknown>;
 		const thumbnail = (mediaGroup['media:thumbnail'] as Record<string, string>)['@_url'];
@@ -113,40 +76,56 @@ export async function getVideos(): Promise<Video[]> {
 			updated: String(entry.updated),
 			thumbnail,
 			url: `https://www.youtube.com/watch?v=${videoId}`,
-			author: String((entry.author as { name?: string } | undefined)?.name ?? channel.name)
+			author: String((entry.author as { name?: string } | undefined)?.name ?? site.channel.name)
 		} satisfies Video;
 	});
-
-	return cache;
 }
 
-export async function getVideoBySlug(slug: string): Promise<Video | undefined> {
-	const videos = await getVideos();
+export async function getVideos(siteId: string): Promise<Video[]> {
+	const cached = cache.get(siteId);
+	if (cached) return cached;
+
+	const site = getSite(siteId);
+	if (!site) throw new Error(`Unknown site: ${siteId}`);
+
+	const enrichmentData = site.enrichment as Record<string, VideoEnrichment>;
+	const videos = await fetchViaRss(site, enrichmentData);
+
+	cache.set(siteId, videos);
+	return videos;
+}
+
+export async function getVideoBySlug(siteId: string, slug: string): Promise<Video | undefined> {
+	const videos = await getVideos(siteId);
 	return videos.find((v) => v.slug === slug);
 }
 
 export interface VideoGroup {
-	category: VideoCategory | 'Autres';
+	category: string;
 	videos: Video[];
 }
 
-export function groupByCategory(videos: Video[]): VideoGroup[] {
-	const groups = new Map<VideoCategory | 'Autres', Video[]>();
+export function groupByCategory(videos: Video[], siteId: string): VideoGroup[] {
+	const site = getSite(siteId);
+	if (!site) throw new Error(`Unknown site: ${siteId}`);
 
+	const groups = new Map<string, Video[]>();
 	for (const video of videos) {
 		const key = video.category ?? 'Autres';
 		if (!groups.has(key)) groups.set(key, []);
 		groups.get(key)!.push(video);
 	}
 
-	const order = [...CATEGORY_ORDER, 'Autres' as const];
+	const order = [...site.categoryOrder, 'Autres'];
 	return order
 		.filter((category) => groups.has(category))
 		.map((category) => ({ category, videos: groups.get(category)! }));
 }
 
 export function getRelatedByCategory(video: Video, allVideos: Video[], limit = 6): Video[] {
-	return allVideos.filter((v) => v.id !== video.id && v.category === video.category).slice(0, limit);
+	return allVideos
+		.filter((v) => v.id !== video.id && v.category === video.category)
+		.slice(0, limit);
 }
 
 export function getRelatedByType(video: Video, allVideos: Video[], limit = 6): Video[] {

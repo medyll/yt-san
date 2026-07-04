@@ -1,8 +1,12 @@
 <script lang="ts">
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import type { Video } from '$lib/server/youtube';
 
-	let { video, large = false }: { video: Video; large?: boolean } = $props();
+	let {
+		video,
+		siteId,
+		large = false
+	}: { video: Video; siteId: string; large?: boolean } = $props();
 
 	const dateLabel = $derived(
 		new Date(video.published).toLocaleDateString('fr-FR', {
@@ -11,9 +15,10 @@
 			year: 'numeric'
 		})
 	);
+	const href = $derived(resolve('/[site]/videos/[slug]', { site: siteId, slug: video.slug }));
 </script>
 
-<a href="{base}/videos/{video.slug}" class="card" class:large>
+<a {href} class="card" class:large>
 	<img src={video.thumbnail} alt={video.title} loading="lazy" class="thumb" />
 	<div class="body">
 		{#if video.genre}
