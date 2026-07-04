@@ -54,10 +54,11 @@ YouTube (pas de genre/sous-titre affiché) — donc penser à relancer ce proces
 ```json
 "<videoId>": {
   "genre": "2-4 mots, style musical précis (pas générique)",
-  "seoSubtitle": "accroche courte, < 70 caractères, pas clickbait",
+  "seoSubtitle": "accroche factuelle, 1-2 phrases (~140-180 caractères), pas clickbait, aucun fait inventé",
   "cleanDescription": "description nettoyée, contenu réel gardé",
-  "category": "une des 6 catégories ci-dessous",
-  "featured": true|false
+  "category": "une des 7 catégories ci-dessous",
+  "featured": true|false,
+  "tags": ["mots-clés SEO factuels : nom propre, terme technique, franchise, organisation partenaire..."]
 }
 ```
 
@@ -65,19 +66,39 @@ YouTube (pas de genre/sous-titre affiché) — donc penser à relancer ce proces
 
 Liste fermée, définie dans `CATEGORY_ORDER` (`src/lib/server/youtube.ts`) —
 l'ordre de cette liste est aussi l'ordre d'affichage des sections sur
-`/videos`. Ajouter une nouvelle catégorie seulement si aucune des 6
+`/videos`. Ajouter une nouvelle catégorie seulement si aucune des 7
 existantes ne convient vraiment, et mettre à jour `CATEGORY_ORDER` +
 `VideoCategory` en même temps que le JSON :
 
 1. **Musique de jeu vidéo** — OST/thème composé pour un jeu ou mod.
-2. **Rescores & ciné** — rescore de trailer/doc/court-métrage existant,
-   concours de scoring (ScoreRelief...).
-3. **Collaborations** — coécrit avec un autre artiste crédité.
-4. **Compositions originales** — pièce solo, pas de contrainte de concours/
+2. **Concours de scoring caritatifs** — participation à un concours de
+   scoring formel avec partenaire(s) identifié(s) et vocation caritative
+   (ScoreRelief...). Distinct du rescore "libre" ci-dessous : ici il y a un
+   concours, un partenaire (fondation/orchestre), souvent un lien de don.
+3. **Rescores & ciné** — rescore d'un support existant (trailer, doc,
+   court-métrage) SANS concours formel : pratique perso ou matériel fourni
+   par une chaîne (ex: The Cue Tube) pour s'exercer, pas de compétition.
+4. **Collaborations** — coécrit avec un autre artiste crédité.
+5. **Compositions originales** — pièce solo, pas de contrainte de concours/
    défi, pas un rescore.
-5. **Défis créatifs** — défi lancé par un tiers avec contraintes explicites
-   (thème imposé, instrument imposé, tempo...).
-6. **Improvisations** — improvisation courte, pas de production soignée.
+6. **Défis créatifs** — défi lancé par un particulier (pas une organisation)
+   avec contraintes explicites (thème imposé, instrument imposé, tempo...),
+   sans notion de concours/compétition formelle.
+7. **Improvisations** — improvisation courte, pas de production soignée.
+
+Point délicat qui a motivé la scission 2/3 : au départ concours caritatifs et
+rescores libres étaient dans le même panier "Rescores & ciné", jugé pas assez
+précis (perdait la nuance concours-avec-partenaires vs pratique perso).
+
+### Tags (`tags`)
+
+Liste libre, mots-clés SEO/faceted en français, factuels uniquement (repris
+du titre/description YouTube ou de faits déjà vérifiés — jamais inventés).
+Sert à: `<meta name="keywords">`, JSON-LD `keywords`, affichage en chips sur
+la fiche vidéo. Inclure typiquement: type d'activité ("rescore",
+"improvisation", "défi créatif"...), noms propres (personnes, franchises,
+organisations partenaires), termes techniques (instrument, style). Ne pas
+mettre le genre musical en double si déjà couvert par `genre`.
 
 ### Critère `featured` (grande vignette 2x2 vs standard)
 

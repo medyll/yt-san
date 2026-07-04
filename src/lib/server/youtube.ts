@@ -4,6 +4,7 @@ import enrichment from '$lib/data/enrichment.json';
 
 export type VideoCategory =
 	| 'Musique de jeu vidéo'
+	| 'Concours de scoring caritatifs'
 	| 'Rescores & ciné'
 	| 'Collaborations'
 	| 'Compositions originales'
@@ -12,6 +13,7 @@ export type VideoCategory =
 
 export const CATEGORY_ORDER: VideoCategory[] = [
 	'Musique de jeu vidéo',
+	'Concours de scoring caritatifs',
 	'Rescores & ciné',
 	'Collaborations',
 	'Compositions originales',
@@ -25,6 +27,7 @@ export interface VideoEnrichment {
 	cleanDescription: string;
 	category: VideoCategory;
 	featured: boolean;
+	tags: string[];
 }
 
 export interface Video {
@@ -37,6 +40,7 @@ export interface Video {
 	seoSubtitle?: string;
 	category?: VideoCategory;
 	featured: boolean;
+	tags: string[];
 	published: string;
 	updated: string;
 	thumbnail: string;
@@ -95,6 +99,7 @@ export async function getVideos(): Promise<Video[]> {
 			seoSubtitle: enriched?.seoSubtitle,
 			category: enriched?.category,
 			featured: enriched?.featured ?? false,
+			tags: enriched?.tags ?? [],
 			published: String(entry.published),
 			updated: String(entry.updated),
 			thumbnail,

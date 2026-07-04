@@ -6,12 +6,14 @@
 		title,
 		description = site.description,
 		image,
-		type = 'website'
+		type = 'website',
+		keywords
 	}: {
 		title: string;
 		description?: string;
 		image?: string;
 		type?: 'website' | 'video.other';
+		keywords?: string[];
 	} = $props();
 
 	const fullTitle = $derived(title === site.title ? title : `${title} · ${site.title}`);
@@ -21,6 +23,9 @@
 <svelte:head>
 	<title>{fullTitle}</title>
 	<meta name="description" content={description} />
+	{#if keywords && keywords.length > 0}
+		<meta name="keywords" content={keywords.join(', ')} />
+	{/if}
 	<link rel="canonical" href={canonical} />
 
 	<meta property="og:type" content={type} />

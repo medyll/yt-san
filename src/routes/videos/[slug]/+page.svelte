@@ -16,6 +16,7 @@
 		uploadDate: video.published,
 		embedUrl: `https://www.youtube.com/embed/${video.id}`,
 		genre: video.genre,
+		keywords: video.tags.join(', '),
 		author: {
 			'@type': 'Person',
 			name: channel.name
@@ -28,6 +29,7 @@
 	description={(video.seoSubtitle ?? video.description).slice(0, 160)}
 	image={video.thumbnail}
 	type="video.other"
+	keywords={video.tags}
 />
 
 <svelte:head>
@@ -58,6 +60,13 @@
 		})}
 	</p>
 	<p class="description">{video.description}</p>
+	{#if video.tags.length > 0}
+		<ul class="tags">
+			{#each video.tags as tag (tag)}
+				<li>#{tag}</li>
+			{/each}
+		</ul>
+	{/if}
 	<a href={video.url} target="_blank" rel="noopener noreferrer" class="external">
 		Voir sur YouTube →
 	</a>
@@ -120,6 +129,23 @@
 			margin-top: var(--space-4);
 			white-space: pre-line;
 			color: var(--color-text-dim);
+		}
+
+		.tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: var(--space-2);
+			margin-top: var(--space-4);
+			padding: 0;
+			list-style: none;
+
+			li {
+				border-radius: 999px;
+				border: 1px solid var(--color-border);
+				padding: var(--space-1) var(--space-3);
+				font-size: 0.75rem;
+				color: var(--color-text-dim);
+			}
 		}
 
 		.external {
