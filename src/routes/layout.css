@@ -1,1 +1,75 @@
-@import 'tailwindcss';
+@import '$lib/styles/tokens.css';
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: var(--color-bg);
+	color: var(--color-text);
+	font-family: var(--font-body);
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--font-display);
+	font-weight: 600;
+	line-height: 1.2;
+	margin: 0;
+}
+
+p {
+	margin: 0;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+img {
+	max-width: 100%;
+	display: block;
+}
+
+.line-clamp-2 {
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.video-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	grid-auto-flow: dense;
+	gap: var(--space-5);
+}
+
+.button {
+	display: inline-block;
+	border-radius: var(--radius);
+	background: var(--color-accent);
+	padding: var(--space-3) var(--space-5);
+	font-weight: 600;
+	color: var(--color-bg);
+	transition:
+		background var(--transition),
+		transform var(--transition);
+
+	&:hover {
+		background: var(--color-accent-hover);
+		transform: translateY(-1px);
+	}
+}

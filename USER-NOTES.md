@@ -1,8 +1,35 @@
-# Notes de guidance — enrichissement IA du contenu vidéo
+# Notes de guidance — yt-san
 
-Ce fichier documente les décisions et instructions à suivre pour la partie
-"enrichissement IA" du site (genre musical, sous-titre SEO, nettoyage de
-description). À garder à jour si le comportement souhaité change.
+Ce fichier documente les décisions et instructions à suivre. À garder à jour
+si le comportement souhaité change.
+
+## Stack CSS : pas de Tailwind
+
+Tailwind a été retiré du projet (était trop contraignant pour un design
+custom, et rendait la mise en forme "insipide" — palette générique
+gris/rouge). Remplacé par du CSS nested natif :
+
+- `src/lib/styles/tokens.css` — variables CSS (`--color-*`, `--space-*`,
+  `--font-*`, `--radius`...). Toute nouvelle couleur/espacement doit passer
+  par une variable ici, pas une valeur en dur dans un composant.
+- `src/routes/layout.css` — reset + styles de base (body, headings, liens) +
+  quelques classes utilitaires partagées (`.video-grid`, `.button`,
+  `.line-clamp-2`) réutilisées par plusieurs pages.
+- Chaque composant Svelte a son propre `<style>` avec nesting CSS natif
+  (`&:hover`, sélecteurs imbriqués) — pas de classes utilitaires, pas de
+  build step CSS supplémentaire.
+- Grille vidéos : `.video-grid` = `display:grid; grid-auto-flow:dense` +
+  `minmax(220px,1fr)`. Une carte "featured" a juste `grid-column:span 2;
+  grid-row:span 2` (classe `.large` dans `VideoCard.svelte`) — le
+  `dense` packing comble automatiquement les trous avec les cartes
+  standard, pas besoin de subgrid ni de grilles séparées (ancienne
+  approche abandonnée, elle cassait dès qu'on mélangeait tailles).
+
+## Fiches vidéo : vidéos liées en bas de page
+
+`/videos/[slug]` affiche en pied de page une section "Autres vidéos —
+{catégorie}" avec jusqu'à 6 vidéos de la même catégorie (hors vidéo
+courante) via `getRelatedVideos()` dans `src/lib/server/youtube.ts`.
 
 ## Comment ça marche (important)
 

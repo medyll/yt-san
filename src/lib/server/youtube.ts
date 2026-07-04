@@ -99,7 +99,7 @@ export async function getVideos(): Promise<Video[]> {
 			updated: String(entry.updated),
 			thumbnail,
 			url: `https://www.youtube.com/watch?v=${videoId}`,
-			author: String(entry.author?.name ?? channel.name)
+			author: String((entry.author as { name?: string } | undefined)?.name ?? channel.name)
 		} satisfies Video;
 	});
 
@@ -111,17 +111,9 @@ export async function getVideoBySlug(slug: string): Promise<Video | undefined> {
 	return videos.find((v) => v.slug === slug);
 }
 
-export function splitFeatured(videos: Video[]): { featured: Video[]; standard: Video[] } {
-	return {
-		featured: videos.filter((v) => v.featured),
-		standard: videos.filter((v) => !v.featured)
-	};
-}
-
 export interface VideoGroup {
 	category: VideoCategory | 'Autres';
-	featured: Video[];
-	standard: Video[];
+	videos: Video[];
 }
 
 export function groupByCategory(videos: Video[]): VideoGroup[] {
@@ -136,12 +128,9 @@ export function groupByCategory(videos: Video[]): VideoGroup[] {
 	const order = [...CATEGORY_ORDER, 'Autres' as const];
 	return order
 		.filter((category) => groups.has(category))
-		.map((category) => {
-			const categoryVideos = groups.get(category)!;
-			return {
-				category,
-				featured: categoryVideos.filter((v) => v.featured),
-				standard: categoryVideos.filter((v) => !v.featured)
-			};
-		});
+		.map((category) => ({ category, videos: groups.get(category)! }));
+}
+
+export function getRelatedVideos(video: Video, allVideos: Video[], limit = 6): Video[] {
+	return allVideos.filter((v) => v.id !== video.id && v.category === video.category).slice(0, limit);
 }

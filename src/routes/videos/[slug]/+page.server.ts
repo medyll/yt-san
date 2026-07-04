@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { getVideoBySlug, getVideos } from '$lib/server/youtube';
+import { getRelatedVideos, getVideoBySlug, getVideos } from '$lib/server/youtube';
 import type { EntryGenerator, PageServerLoad } from './$types';
 
 export const entries: EntryGenerator = async () => {
@@ -10,5 +10,6 @@ export const entries: EntryGenerator = async () => {
 export const load: PageServerLoad = async ({ params }) => {
 	const video = await getVideoBySlug(params.slug);
 	if (!video) error(404, 'Vidéo introuvable');
-	return { video };
+	const videos = await getVideos();
+	return { video, related: getRelatedVideos(video, videos) };
 };

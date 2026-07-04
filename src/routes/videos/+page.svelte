@@ -9,26 +9,32 @@
 
 <Seo title="Vidéos" description={`Toutes les vidéos de la chaîne ${channel.name}.`} />
 
-<h1 class="mb-8 text-3xl font-bold">Vidéos</h1>
+<h1 class="page-title">Vidéos</h1>
 
 {#each data.groups as group (group.category)}
-	<section class="mb-12">
-		<h2 class="mb-4 text-xl font-bold text-neutral-200">{group.category}</h2>
-
-		{#if group.featured.length > 0}
-			<div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-				{#each group.featured as video (video.id)}
-					<VideoCard {video} size="large" />
-				{/each}
-			</div>
-		{/if}
-
-		{#if group.standard.length > 0}
-			<div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
-				{#each group.standard as video (video.id)}
-					<VideoCard {video} size="small" />
-				{/each}
-			</div>
-		{/if}
+	<section class="category">
+		<h2>{group.category}</h2>
+		<div class="video-grid">
+			{#each group.videos as video (video.id)}
+				<VideoCard {video} large={video.featured} />
+			{/each}
+		</div>
 	</section>
 {/each}
+
+<style>
+	.page-title {
+		margin-bottom: var(--space-6);
+		font-size: 2rem;
+	}
+
+	.category {
+		margin-bottom: var(--space-7);
+
+		h2 {
+			margin-bottom: var(--space-4);
+			font-size: 1.2rem;
+			color: var(--color-text-dim);
+		}
+	}
+</style>

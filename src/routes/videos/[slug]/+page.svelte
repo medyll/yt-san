@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Seo from '$lib/Seo.svelte';
+	import VideoCard from '$lib/VideoCard.svelte';
 	import { channel } from '$lib/config';
 	import type { PageData } from './$types';
 
@@ -35,37 +36,112 @@
 
 <article>
 	{#if video.genre}
-		<span class="mb-2 inline-block text-xs font-medium tracking-wide text-red-500 uppercase">
-			{video.genre}
-		</span>
+		<span class="genre">{video.genre}</span>
 	{/if}
-	<h1 class="mb-1 text-2xl font-bold">{video.title}</h1>
+	<h1>{video.title}</h1>
 	{#if video.seoSubtitle}
-		<p class="mb-4 text-neutral-400">{video.seoSubtitle}</p>
+		<p class="subtitle">{video.seoSubtitle}</p>
 	{/if}
-	<div class="aspect-video w-full overflow-hidden rounded-lg border border-neutral-800">
+	<div class="player">
 		<iframe
-			class="h-full w-full"
 			src={`https://www.youtube.com/embed/${video.id}`}
 			title={video.title}
 			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 			allowfullscreen
 		></iframe>
 	</div>
-	<p class="mt-4 text-sm text-neutral-500">
+	<p class="date">
 		Publié le {new Date(video.published).toLocaleDateString('fr-FR', {
 			day: 'numeric',
 			month: 'long',
 			year: 'numeric'
 		})}
 	</p>
-	<p class="mt-4 whitespace-pre-line text-neutral-300">{video.description}</p>
-	<a
-		href={video.url}
-		target="_blank"
-		rel="noopener noreferrer"
-		class="mt-6 inline-block text-red-500 hover:underline"
-	>
+	<p class="description">{video.description}</p>
+	<a href={video.url} target="_blank" rel="noopener noreferrer" class="external">
 		Voir sur YouTube →
 	</a>
 </article>
+
+{#if data.related.length > 0}
+	<section class="related">
+		<h2>Autres vidéos — {video.category}</h2>
+		<div class="video-grid">
+			{#each data.related as related (related.id)}
+				<VideoCard video={related} />
+			{/each}
+		</div>
+	</section>
+{/if}
+
+<style>
+	article {
+		.genre {
+			display: inline-block;
+			margin-bottom: var(--space-2);
+			font-size: 0.75rem;
+			font-weight: 600;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			color: var(--color-accent);
+		}
+
+		h1 {
+			margin-bottom: var(--space-1);
+			font-size: 1.6rem;
+		}
+
+		.subtitle {
+			margin-bottom: var(--space-4);
+			color: var(--color-text-dim);
+		}
+
+		.player {
+			aspect-ratio: 16 / 9;
+			width: 100%;
+			overflow: hidden;
+			border: 1px solid var(--color-border);
+			border-radius: var(--radius);
+
+			iframe {
+				width: 100%;
+				height: 100%;
+				border: none;
+			}
+		}
+
+		.date {
+			margin-top: var(--space-4);
+			font-size: 0.85rem;
+			color: var(--color-text-faint);
+		}
+
+		.description {
+			margin-top: var(--space-4);
+			white-space: pre-line;
+			color: var(--color-text-dim);
+		}
+
+		.external {
+			display: inline-block;
+			margin-top: var(--space-5);
+			color: var(--color-accent);
+
+			&:hover {
+				color: var(--color-accent-hover);
+			}
+		}
+	}
+
+	.related {
+		margin-top: var(--space-7);
+		padding-top: var(--space-6);
+		border-top: 1px solid var(--color-border);
+
+		h2 {
+			margin-bottom: var(--space-4);
+			font-size: 1.1rem;
+			color: var(--color-text-dim);
+		}
+	}
+</style>

@@ -10,37 +10,62 @@
 
 <Seo title={site.title} description={site.description} />
 
-<section class="mb-12 text-center">
-	<h1 class="text-4xl font-bold tracking-tight">{channel.name}</h1>
-	<p class="mt-3 text-neutral-400">{site.description}</p>
-	<a
-		href={channel.url}
-		target="_blank"
-		rel="noopener noreferrer"
-		class="mt-6 inline-block rounded-md bg-red-600 px-5 py-2 font-semibold hover:bg-red-500"
-	>
+<section class="hero">
+	<h1>{channel.name}</h1>
+	<p>{site.description}</p>
+	<a href={channel.url} target="_blank" rel="noopener noreferrer" class="button">
 		S'abonner sur YouTube
 	</a>
 </section>
 
 <section>
-	<div class="mb-4 flex items-center justify-between">
-		<h2 class="text-xl font-bold">Dernières vidéos</h2>
-		<a href="{base}/videos" class="text-sm text-red-500 hover:underline">Voir tout</a>
+	<div class="section-head">
+		<h2>Dernières vidéos</h2>
+		<a href="{base}/videos">Voir tout →</a>
 	</div>
-	{#if data.featured.length > 0}
-		<div class="mb-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-			{#each data.featured as video (video.id)}
-				<VideoCard {video} size="large" />
-			{/each}
-		</div>
-	{/if}
-
-	{#if data.standard.length > 0}
-		<div class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
-			{#each data.standard as video (video.id)}
-				<VideoCard {video} size="small" />
-			{/each}
-		</div>
-	{/if}
+	<div class="video-grid">
+		{#each data.videos as video (video.id)}
+			<VideoCard {video} large={video.featured} />
+		{/each}
+	</div>
 </section>
+
+<style>
+	.hero {
+		margin-bottom: var(--space-7);
+		text-align: center;
+
+		h1 {
+			font-size: 2.5rem;
+		}
+
+		p {
+			margin-top: var(--space-3);
+			color: var(--color-text-dim);
+		}
+
+		.button {
+			margin-top: var(--space-5);
+		}
+	}
+
+	.section-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		margin-bottom: var(--space-4);
+
+		h2 {
+			font-size: 1.3rem;
+		}
+
+		a {
+			font-size: 0.85rem;
+			color: var(--color-accent);
+
+			&:hover {
+				color: var(--color-accent-hover);
+			}
+		}
+	}
+</style>
