@@ -57,10 +57,34 @@ YouTube (pas de genre/sous-titre affiché) — donc penser à relancer ce proces
   "seoSubtitle": "accroche factuelle, 1-2 phrases (~140-180 caractères), pas clickbait, aucun fait inventé",
   "cleanDescription": "description nettoyée, contenu réel gardé",
   "category": "une des 7 catégories ci-dessous",
+  "type": "un des 3 types ci-dessous (axe orthogonal à category)",
   "featured": true|false,
   "tags": ["mots-clés SEO factuels : nom propre, terme technique, franchise, organisation partenaire..."]
 }
 ```
+
+### Deux axes de classification, pas un
+
+`category` = contexte/projet (pourquoi cette vidéo existe : jeu vidéo, concours,
+rescore, collab, composition libre, défi, improvisation).
+
+`type` = format sonore/instrumentation, indépendant du contexte :
+
+1. **Orchestral** — arrangement complet façon musique de film (cordes,
+   cuivres, percussions...). Concerne la majorité du catalogue actuel.
+2. **Piano solo** — piano seul, sans arrangement (les 3 improvisations
+   actuelles).
+3. **Expérimental** — instrumentation atypique/imposée qui sort du cadre
+   orchestral classique (ex: theremin sur "Rêve éveillé").
+
+Utilité concrète : en bas de chaque fiche vidéo (`/videos/[slug]`), DEUX
+sections de vidéos liées, sur les deux axes séparément —
+`getRelatedByCategory()` (même contexte) et `getRelatedByType()` (même
+format sonore, potentiellement à travers plusieurs catégories : ex Aquaman
+[Rescores & ciné] et Alliance [Musique de jeu vidéo] partagent le type
+"Orchestral"). Ne pas fusionner les deux listes, elles répondent à des
+questions différentes pour le visiteur ("autre chose du même genre de
+projet" vs "autre chose avec la même instrumentation").
 
 ### Catégories (`category`)
 

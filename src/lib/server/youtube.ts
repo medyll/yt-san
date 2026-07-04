@@ -21,11 +21,18 @@ export const CATEGORY_ORDER: VideoCategory[] = [
 	'Improvisations'
 ];
 
+// Second, orthogonal classification axis: sound format/instrumentation,
+// independent of the project context captured by `category`.
+export type VideoType = 'Orchestral' | 'Piano solo' | 'Expérimental';
+
+export const TYPE_ORDER: VideoType[] = ['Orchestral', 'Piano solo', 'Expérimental'];
+
 export interface VideoEnrichment {
 	genre: string;
 	seoSubtitle: string;
 	cleanDescription: string;
 	category: VideoCategory;
+	type: VideoType;
 	featured: boolean;
 	tags: string[];
 }
@@ -39,6 +46,7 @@ export interface Video {
 	genre?: string;
 	seoSubtitle?: string;
 	category?: VideoCategory;
+	type?: VideoType;
 	featured: boolean;
 	tags: string[];
 	published: string;
@@ -98,6 +106,7 @@ export async function getVideos(): Promise<Video[]> {
 			genre: enriched?.genre,
 			seoSubtitle: enriched?.seoSubtitle,
 			category: enriched?.category,
+			type: enriched?.type,
 			featured: enriched?.featured ?? false,
 			tags: enriched?.tags ?? [],
 			published: String(entry.published),
@@ -136,6 +145,10 @@ export function groupByCategory(videos: Video[]): VideoGroup[] {
 		.map((category) => ({ category, videos: groups.get(category)! }));
 }
 
-export function getRelatedVideos(video: Video, allVideos: Video[], limit = 6): Video[] {
+export function getRelatedByCategory(video: Video, allVideos: Video[], limit = 6): Video[] {
 	return allVideos.filter((v) => v.id !== video.id && v.category === video.category).slice(0, limit);
+}
+
+export function getRelatedByType(video: Video, allVideos: Video[], limit = 6): Video[] {
+	return allVideos.filter((v) => v.id !== video.id && v.type === video.type).slice(0, limit);
 }

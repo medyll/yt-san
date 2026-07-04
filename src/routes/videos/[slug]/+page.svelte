@@ -72,11 +72,22 @@
 	</a>
 </article>
 
-{#if data.related.length > 0}
+{#if data.relatedByCategory.length > 0}
 	<section class="related">
 		<h2>Autres vidéos — {video.category}</h2>
 		<div class="video-grid">
-			{#each data.related as related (related.id)}
+			{#each data.relatedByCategory as related (related.id)}
+				<VideoCard video={related} />
+			{/each}
+		</div>
+	</section>
+{/if}
+
+{#if data.relatedByType.length > 0}
+	<section class="related">
+		<h2>Même type de composition — {video.type}</h2>
+		<div class="video-grid">
+			{#each data.relatedByType as related (related.id)}
 				<VideoCard video={related} />
 			{/each}
 		</div>
